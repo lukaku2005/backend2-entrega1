@@ -1,4 +1,4 @@
-import RouterHelper from "../../helpers/router.helper.js";
+import RouterHelper from "../helpers/router.helper.js";
 import apiRouter from "./api.router.js";
 import viewsRouter from "./views.router.js";
 

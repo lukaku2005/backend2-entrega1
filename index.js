@@ -1,14 +1,14 @@
 import "./src/helpers/env.helper.js";
 import express from 'express';
 import morgan from "morgan";
-import dbConnect from "./src/helpers/dbConnect.helper.js";
+import dbConnect from "./src/helpers/dbConect.helpers.js";
 import indexRouter from "./src/routers/index.router.js";
-import errorHandler from "./src/middlewares/errorHandler.mid.js";
-import pathHandler from "./src/middlewares/pathHandler.mid.js";
+import errorHandler from "./src/middlewars/errorHandler.mid.js";
+import pathHandler from "./src/middlewars/pathHandler.mid.js";
 import cookieParser from "cookie-parser";
 import {engine} from 'express-handlebars'
 import path from 'path'
-import __dirname from "./dirname.js";
+
 
 import argvsHelper from "./src/helpers/argvs.helper.js";
 

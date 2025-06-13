@@ -1,3 +1,4 @@
+import { Router } from "express";
 import setupResponses from "../middlewars/setupResponses.mid.js";
 import setupPolicies from "../middlewars/setup.policies.mid.js";
 
@@ -35,7 +36,7 @@ class RouterHelper {
       this.applyCallbacksToRender(cbs)
     );
   update = (path, policies, ...cbs) =>
-    this.router.puth(path, setupPolicies(policies), this.applyCallbacks(cbs));
+    this.router.put(path, setupPolicies(policies), this.applyCallbacks(cbs));
   delete = (path, policies, ...cbs) =>
     this.router.delete(path, setupPolicies(policies), this.applyCallbacks(cbs));
   use = (path, ...cbs) => this.router.use(path, this.applyCallbacks(cbs));
