@@ -1,12 +1,7 @@
-import { response, Router } from "express";
+import RouterHelper from "../../helpers/router.helper.js";
 import { userManager } from "../../data/manager.mongo.js";
 
-
-const userRouter = Router()
-
-
-const createOne = async (req, res, next) => {
-  try {
+const createOne = async (req, res) => {
     const data = req.body;
     const one = await userManager.createOne(data);
     res.status(201).json({
@@ -14,14 +9,10 @@ const createOne = async (req, res, next) => {
       url: req.originalUrl,
       response: one,
     });
-  } catch (error) {
-    next(error);
-  }
 };
 
-const readAll = async (req, res, next) => {
-  try {
-    const filter = req.query;
+const readAll = async (req, res) => {
+  const filter = req.query;
     const all = await userManager.readAll(filter);
     if (all.length > 0) {
       res.status(200).json({
@@ -34,13 +25,10 @@ const readAll = async (req, res, next) => {
       error.statusCode = 404;
       throw error;
     }
-  } catch (error) {
-    next(error);
-  }
 };
 
-const readById = async (req, res, next) => {
-  try {
+const readById = async (req, res ) => {
+  
     const { id } = req.params;
     const one = await userManager.readById(id);
     if (one) {
@@ -54,13 +42,10 @@ const readById = async (req, res, next) => {
       error.statusCode = 404;
       throw error;
     }
-  } catch (error) {
-    next(error);
-  }
 };
 
-const destroyById = async (req, res, next) => {
-  try {
+const destroyById = async (req, res) => {
+  
     const { id } = req.params;
     const one = await userManager.destroyById(id);
     if (one) {
@@ -74,13 +59,9 @@ const destroyById = async (req, res, next) => {
       error.statusCode = 404;
       throw error;
     }
-  } catch (error) {
-    next(error);
-  }
 };
 
-const updateById = async (req, res, next) => {
-  try {
+const updateById = async (req, res) => {
     const { id } = req.params;
     const data = req.body;
     const one = await userManager.updateById(id, data);
@@ -95,16 +76,21 @@ const updateById = async (req, res, next) => {
       error.statusCode = 404;
       throw error;
     }
-  } catch (error) {
-    next(error);
-  }
 };
 
-userRouter.post("/", createOne);
-userRouter.get("/", readAll);
-userRouter.get("/:id", readById);
-userRouter.put("/:id", updateById);
-userRouter.delete("/:id", destroyById);
+class UserRouter extends RouterHelper {
+  constructor() {
+    super();
+    this.init();
+  }
+  init = () => {
+    this.create("/", createOne);
+    this.read("/", readAll);
+    this.read("/:id", readById);
+    this.update("/:id", updateById);
+    this.delete("/:id", destroyById);
+  };
+}
 
+const userRouter = new UserRouter().getRouter;
 export default userRouter;
-

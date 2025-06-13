@@ -1,17 +1,31 @@
-import { Router } from "express";
+import RouterHelper from "../helpers/router.helper.js";
+import usersRouter from "./api/users.router.js";
+import productsRouter from "./api/products.router.js";
 import cartsRouter from "./api/carts.router.js";
-import productRouter from "./api/product.router.js";
-import userRouter from "./api/user.router.js";
 import cookiesRouter from "./api/cookies.router.js";
-import sessionRouter from "./api/sessions.routers.js";
+import sessionsRouter from "./api/sessions.router.js";
 import authRouter from "./api/auth.router.js";
+import sendEmail from "../helpers/sendEmail.helper.js";
 
-const apiRouter = Router();
-apiRouter.use("/users", userRouter);
-apiRouter.use("/product", productRouter);
-apiRouter.use("/carts", cartsRouter);
-apiRouter.use("/cookies", cookiesRouter);
-apiRouter.use("/sessions", sessionRouter);
-apiRouter.use("/auth", authRouter);
+class ApiRouter extends RouterHelper {
+  constructor() {
+    super();
+    this.init();
+  }
+  init = () => {
+    this.use("/users", usersRouter);
+    this.use("/products", productsRouter);
+    this.use("/carts", cartsRouter);
+    this.use("/cookies", cookiesRouter);
+    this.use("/sessions", sessionsRouter);
+    this.use("/auth", authRouter);
+    this.read("/send/:email", ["PUBLIC"], async (req, res) => {
+      const { email } = req.params;
+      await sendEmail(email);
+      res.json200({ sent: true });
+    });
+  };
+}
 
+const apiRouter = new ApiRouter().getRouter();
 export default apiRouter;

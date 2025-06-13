@@ -1,6 +1,6 @@
-import User from "./models/users.models.js"
-import Product from "./models/products.model.js"
-import Cart from "./models/carts.model.js"
+import User from "../dao/mongo/models/users.models.js"
+import Product from "../dao/mongo/models/products.model.js"
+import Cart from "../dao/mongo/models/carts.model.js"
 
 
 

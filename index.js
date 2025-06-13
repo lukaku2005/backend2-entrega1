@@ -1,45 +1,46 @@
-import "dotenv/config.js";
-import express, { json, urlencoded } from "express";
-import { engine } from "express-handlebars";
-import __dirname from "./utils.js";
+import "./src/helpers/env.helper.js";
+import express from 'express';
 import morgan from "morgan";
+import dbConnect from "./src/helpers/dbConnect.helper.js";
+import indexRouter from "./src/routers/index.router.js";
+import errorHandler from "./src/middlewares/errorHandler.mid.js";
+import pathHandler from "./src/middlewares/pathHandler.mid.js";
 import cookieParser from "cookie-parser";
-/*import session from "express-session";*/
-/*import MongoStore from "connect-mongo";*/
-import pathHandler from "./src/middlewars/pathHandler.mid.js";
-import errorHandler from "./src/middlewars/errorhandler.mid.js";
-import router from "./src/routers/index.router.js";
-import dbConnect from "./src/helpers/dbConects.helpers.js";
+import {engine} from 'express-handlebars'
+import path from 'path'
+import __dirname from "./dirname.js";
 
-const server = express();
-const port = process.env.PORT || 8080;
-const ready = async () => {
-  console.log("serer listo en " + port);
-  await dbConnect(process.env.URL_MONGO);
-};
-server.listen(port, ready);
+import argvsHelper from "./src/helpers/argvs.helper.js";
 
-server.engine("handlebars", engine());
-server.set("view engine", "handlebars");
-server.set("views", __dirname + "/src/views");
+const server = express()
+const PORT = process.env.PORT || 8080
+const ready = async () => { 
+  console.log(`Server running on http://localhost:${PORT} and mode ${argvsHelper.mode}`)
+  if (process.env.PERSISTENCE === "mongo") {
+    await dbConnect(process.env.LINK_DB);
+  }
+}
+server.listen(PORT, ready())
 
-server.use(cookieParser(process.env.SECRET));
-server.use(json());
-server.use(urlencoded({ extended: true }));
-server.use(express.static("public"));
-server.use(morgan("dev"));
-/*server.use(
-  session({
-    secret: process.env.SECRET,
-    resave: true,
-    saveUninitialized: true,
-    store: new MongoStore({
-      mongoUrl: process.env.URL_MONGO,
-      ttl: 7 * 24 * 60 * 60,
-    }),
+server.engine(
+  "handlebars",
+  engine({
+    defaultLayout: "main",
+    layoutsDir: path.join(__dirname, "src", "views", "layouts"),
+    partialsDir: path.join(__dirname, "src/views/layouts"),
   })
-);*/
+)
+server.set("view engine", "handlebars");
+server.set("views", path.join(__dirname, "src", "views"));
 
-server.use("/", router);
-server.use(errorHandler);
-server.use(pathHandler);
+server.use(cookieParser("PARA_FIRMAR")) 
+server.use(express.json()); 
+server.use(express.urlencoded({ extended: true })); 
+
+server.use(express.static(path.join(__dirname, "public")))
+server.use(morgan("dev"))
+
+
+server.use("/", indexRouter) 
+server.use(errorHandler)
+server.use(pathHandler)

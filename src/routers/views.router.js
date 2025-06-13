@@ -1,57 +1,46 @@
-import { Router } from "express";
-import { productManager } from "../data/manager.mongo.js";
-
-const viewsRouter = Router();
+import RouterHelper from "../helpers/router.helper.js";
+import productsRepository from "../repositories/products.repository.js";
 
 const homeViewCb = async (req, res) => {
-  try {
-    const products = await productManager.readAll();
-    res.status(200).render("index", { products });
-  } catch (error) {
-    res.status(error.statusCode || 500).render("error", { error });
-  }
+  const products = await productsRepository.readAll();
+  res.status(200).render("index", { products });
 };
 const productViewCb = async (req, res) => {
-  try {
-    const {pid} = req.params
-    const product = await productManager.readById(pid);
-    res.status(200).render("product", { product });
-  } catch (error) {
-    res.status(error.statusCode || 500).render("error", { error });
-  }
+  const { pid } = req.params;
+  const product = await productsRepository.readById(pid);
+  res.status(200).render("product", { product });
 };
-
 const registerViewCb = async (req, res) => {
-  try {
-    const products = await productManager.readAll();
-    res.status(200).render("register", { products });
-  } catch (error) {
-    res.status(error.statusCode || 500).render("error", { error });
-  }
+  const products = await productsRepository.readAll();
+  res.status(200).render("register", { products });
 };
-
 const loginViewCb = async (req, res) => {
-  try {
-    const products = await productManager.readAll();
-    res.status(200).render("login", { products });
-  } catch (error) {
-    res.status(error.statusCode || 500).render("error", { error });
-  }
+  const products = await productsRepository.readAll();
+  res.status(200).render("login", { products });
 };
-
 const profileViewCb = async (req, res) => {
-  try {
-    const products = await productManager.readAll();
-    res.status(200).render("profile", { products });
-  } catch (error) {
-    res.status(error.statusCode || 500).render("error", { error });
-  }
+  const products = await productsRepository.readAll();
+  res.status(200).render("profile", { products });
+};
+const verifyViewCb = async (req, res) => {
+  const { email } = req.params
+  res.status(200).render("verify", { email });
 };
 
-viewsRouter.get("/", homeViewCb);
-viewsRouter.get("/product/:pid", productViewCb)
-viewsRouter.get("/register", registerViewCb);
-viewsRouter.get("/login", loginViewCb);
-viewsRouter.get("/profile", profileViewCb);
+class ViewsRouter extends RouterHelper {
+  constructor() {
+    super();
+    this.init();
+  }
+  init = () => {
+    this.render("/", ["PUBLIC"], homeViewCb);
+    this.render("/product/:pid", ["PUBLIC"], productViewCb);
+    this.render("/register", ["PUBLIC"], registerViewCb);
+    this.render("/login", ["PUBLIC"], loginViewCb);
+    this.render("/profile", ["USER", "ADMIN"], profileViewCb);
+    this.render("/verify/:email", ["PUBLIC"], verifyViewCb)
+  };
+}
 
+const viewsRouter = new ViewsRouter().getRouter();
 export default viewsRouter;
